@@ -1,0 +1,17 @@
+version: '3'
+services:
+  gui:
+    image: "istio-gui"
+    ports:
+     - "8080:8080"
+
+  pessoa:
+    image: "istio-pessoa"
+    ports:
+     - "8081:8081"
+
+  receita:
+    image: "istio-receita"
+    ports:
+     - "8082:8082"
+  

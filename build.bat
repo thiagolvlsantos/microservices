@@ -1,0 +1,1 @@
+cd istio-server && build.bat && cd server.receita && build.bat && cd .. && cd server.pessoa && docker-build.bat && cd .. && cd .. && cd istio-gui && build.bat && cd ..
