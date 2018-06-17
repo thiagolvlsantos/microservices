@@ -1,0 +1,111 @@
+<div class="card text-center">
+  <div class="card-header" style="padding:2px">
+    <input [(ngModel)]="endpoint.host" placement="top" ngbTooltip="Host" type="text" class="form-control form-control-sm" style="width:100%"
+      id="host" *ngIf="!endpoint.on" [disabled]="endpoint.on">
+    <input [(ngModel)]="endpoint.url" placement="top" ngbTooltip="URL" type="text" class="form-control form-control-sm" style="width:100%"
+      id="url" *ngIf="!endpoint.on" [disabled]="endpoint.on">
+    <h5 class="{{endpoint.class()}}" *ngIf="endpoint.on" style="margin-bottom: 1px;">{{endpoint.host}}</h5>
+    <h3 class="{{endpoint.class()}}" *ngIf="endpoint.on" style="margin-bottom: 1px;">{{endpoint.call()}}</h3>
+    <h4 *ngIf="endpoint.on && endpoint.params().length>0" class="{{endpoint.class()}}" style="margin-bottom: 1px;">{{endpoint.params() | json}}</h4>
+    <hr style="margin-bottom: 0px; margin-top: 0px;" />
+
+    <div class="row form-inline">
+      <div class=" col-3">
+        <i class="fas fa-hourglass-start"></i>:
+        <input [(ngModel)]="endpoint.sleep" placement="bottom" ngbTooltip="Sleep" type="text" class="form-control form-control-sm"
+          id="sleep" style="width:100%" [disabled]="endpoint.on">
+      </div>
+      <div class="col-6">
+        <i class="fas fa-exclamation-triangle"></i>:
+        <br/>
+        <span *ngFor="let o of [
+                {id:['never','nunca'],texto:'Never'},
+                {id:['always','sempre'],texto:'Always'},
+                {id:['even','par'], texto:'Even'},
+                {id:['odd','ímpar'], texto:'Odd'}
+          ]; let i = index" placement="bottom" ngbTooltip="{{o.texto}}">
+          <input type="radio" [value]="o.id[0]" [checked]="endpoint && endpoint.event && o.id.indexOf(endpoint.event.header('Sm-Info-Mode','sm-info-errormode','Sm-Info-Errormode').toLowerCase())>=0"
+            (change)="seterror(o.id)" name="error{{endpoint.call()}}" class="form-control form-control-sm" id="error">{{o.texto | slice: 0:1}}
+        </span>
+      </div>
+      <div class="col-3">
+        <i class="fas fa-clock"></i>:
+        <input #delay placement="bottom" ngbTooltip="Delay" type="number" class="form-control form-control-sm" style="width:100%"
+          [value]="(endpoint && endpoint.event ? endpoint.event.header('sm-info-delay','Sm-Info-Delay') : 0)" (keyup.enter)="setdelay(delay.value)"
+          (change)="setdelay(delay.value)">
+      </div>
+    </div>
+  </div>
+  <div class="card-body" style="padding:2px">
+    <table class="table table-sm table-bordered table-hover table-condensed table-striped" style="padding:2px; margin-bottom: 0px; margin-top: 0px;">
+      <thead class="thead-dark">
+        <tr>
+          <td scope="col" width="width:10%">
+            <button placement="right" ngbTooltip="Start" (click)="start()" [disabled]="!(endpoint.url && endpoint.sleep)" *ngIf="!endpoint.on"
+              type="button" class="btn btn-sm btn-light">
+              <i class="fas fa-play"></i>
+            </button>
+            <button placement="right" ngbTooltip="Pause" (click)="pause()" [disabled]="!(endpoint.url && endpoint.sleep)" *ngIf="endpoint.on"
+              type="button" class="btn btn-sm btn-light">
+              <i class="fas fa-pause"></i>
+            </button>
+
+          </td>
+          <th scope="col">
+            <i class="fas fa-check"></i>
+          </th>
+          <th scope="col">
+            <i class="fas fa-times"></i>
+          </th>
+          <th scope="col">
+            <i class="fas fa-clock"></i>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td *ngIf="endpoint">
+            <button placement="right" ngbTooltip="Stop" (click)="stop()" [disabled]="!(endpoint.url && endpoint.sleep)" type="button"
+              class="btn btn-sm btn-light">
+              <i class="fas fa-stop"></i>
+            </button>
+          </td>
+          <td *ngIf="endpoint && endpoint.event">{{endpoint.event.header('Sm-Metrics-Success','Sm-Metric-Sucesso','sm-metric-sucessos')}}
+          </td>
+          <td *ngIf="endpoint && endpoint.event">{{endpoint.event.header('Sm-Metrics-Failure','Sm-Metric-Erro','sm-metric-erros')}}
+          </td>
+          <td *ngIf="endpoint && endpoint.event">{{endpoint.event.header('Sm-Metrics-Delayed','Sm-Metric-Atrasadas','sm-metric-atrasadas')}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card-footer {{endpoint.class()}}" style="padding:2px">
+    <div *ngIf="endpoint && endpoint.event" class="row">
+      <div class="col-3" placement="top" ngbTooltip="Environment">
+        {{endpoint.event.header('Sm-Info-Env','sm-info-ambiente','Sm-Info-Ambiente')}}
+      </div>
+      <div class="col-3" placement="top" ngbTooltip="Service">
+        {{endpoint.event.header('Sm-Info-Service','sm-info-servico','Sm-Info-Servico')}}
+      </div>
+      <div class="col-3" placement="top" ngbTooltip="Version">
+        {{endpoint.event.header('Sm-Info-Version','sm-info-versao','Sm-Info-Versao')}}
+      </div>
+      <div class="col-3" placement="top" ngbTooltip="Delay">
+        {{endpoint.event.header('Sm-Info-Delay','sm-info-delay')}}
+      </div>
+    </div>
+    <hr style="margin-bottom: 0px; margin-top: 0px;" />
+    <div class="row" *ngIf="endpoint && endpoint.event">
+      <div class="col-3" style="font-size: 75%">
+        HTTP: {{endpoint.event.response.status}}
+      </div>
+      <div class="col-6" style="font-size: 75%">
+        {{endpoint.event.response.body || '' | json}}
+      </div>
+      <div class="col-3">
+        {{endpoint.event.header('Sm-Metrics-Total','Sm-Metric-Consultas','sm-metric-consultas')}}
+      </div>
+    </div>
+  </div>
+</div>

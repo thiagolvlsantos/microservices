@@ -1,0 +1,16 @@
+.hide {
+    display: none;
+    visibility: hidden; 
+}
+
+.success {
+    background-color: lightgreen;
+}
+
+.error {
+    background-color: tomato;
+}
+
+.delayed {
+    background-color: khaki;
+}
