@@ -1,1 +1,1 @@
-ng build --prod && docker-build.bat
+npm install && ng build --prod && docker-build.bat
